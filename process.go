@@ -62,7 +62,7 @@ func (process *Process) Start(unit *service.Unit) {
 }
 
 func (process *Process) run(routine *Routine, unit *service.Unit) {
-	defer process.wg.Done()
+	routine.wg = process.wg
 
 	exec.Try(func() {
 		routine.Diagnostic.Start()

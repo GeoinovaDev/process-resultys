@@ -1,6 +1,8 @@
 package process
 
 import (
+	"sync"
+
 	"git.resultys.com.br/motor/orchestrator"
 	"git.resultys.com.br/motor/service"
 )
@@ -17,4 +19,12 @@ type Routine struct {
 	Orchestrator *orchestrator.Orchestrator
 
 	Diagnostic Diagnostic
+
+	wg *sync.WaitGroup
+}
+
+// Done ...
+func (routine *Routine) Done(success bool) {
+	routine.Success = success
+	routine.wg.Done()
 }
