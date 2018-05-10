@@ -25,12 +25,17 @@ type Routine struct {
 	isDone bool
 }
 
+// Reset ...
+func (routine *Routine) Reset() {
+	routine.isDone = false
+}
+
 // Done ...
 func (routine *Routine) Done(success bool) {
 	if routine.isDone {
 		return
 	}
-	
+
 	routine.isDone = true
 	routine.Success = success
 	routine.wg.Done()

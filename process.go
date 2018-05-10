@@ -65,6 +65,7 @@ func (process *Process) run(routine *Routine, unit *service.Unit) {
 	routine.wg = process.wg
 
 	exec.Try(func() {
+		routine.Reset()
 		routine.Diagnostic.Start()
 		routine.Func(routine, unit)
 	}).Catch(func(message string) {
