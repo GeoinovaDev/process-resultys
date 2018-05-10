@@ -27,4 +27,5 @@ type Routine struct {
 func (routine *Routine) Done(success bool) {
 	routine.Success = success
 	routine.wg.Done()
+	routine.Diagnostic.Stop()
 }
