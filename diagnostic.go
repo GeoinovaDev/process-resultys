@@ -14,6 +14,7 @@ func (d *Diagnostic) Start() {
 	d.StartTime = time.Now()
 }
 
+// Stop ...
 func (d *Diagnostic) Stop() {
 	d.Elapsed = time.Since(d.StartTime)
 	d.StopTime = time.Now()
