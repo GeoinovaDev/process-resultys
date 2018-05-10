@@ -68,6 +68,7 @@ func (process *Process) run(routine *Routine, unit *service.Unit) {
 		routine.Diagnostic.Start()
 		routine.Func(routine, unit)
 	}).Catch(func(message string) {
+		routine.Done(false)
 		log.Logger.Save(message, log.WARNING, loopback.IP())
 	})
 }

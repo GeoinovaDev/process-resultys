@@ -21,10 +21,17 @@ type Routine struct {
 	Diagnostic Diagnostic
 
 	wg *sync.WaitGroup
+
+	isDone bool
 }
 
 // Done ...
 func (routine *Routine) Done(success bool) {
+	if routine.isDone {
+		return
+	}
+	
+	routine.isDone = true
 	routine.Success = success
 	routine.wg.Done()
 	routine.Diagnostic.Stop()
