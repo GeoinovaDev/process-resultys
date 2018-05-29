@@ -5,8 +5,6 @@ import (
 	"time"
 
 	"git.resultys.com.br/lib/lower/exec"
-	"git.resultys.com.br/lib/lower/log"
-	"git.resultys.com.br/lib/lower/net/loopback"
 	"git.resultys.com.br/motor/service"
 )
 
@@ -70,7 +68,6 @@ func (manager *Manager) run(routine *Routine, process *Process) {
 		routine.Func(routine, process)
 	}).Catch(func(message string) {
 		process.Done(false)
-		log.Logger.Save(message, log.WARNING, loopback.IP())
 	})
 }
 
