@@ -4,6 +4,8 @@ import (
 	"sync"
 	"time"
 
+	"git.resultys.com.br/lib/lower/exception"
+
 	"git.resultys.com.br/lib/lower/exec"
 	"git.resultys.com.br/motor/service"
 )
@@ -24,51 +26,30 @@ func (manager *Manager) AddRoutine(routine *Routine) {
 	manager.Routines = append(manager.Routines, routine)
 }
 
-// Prepare ...
-func (manager *Manager) Prepare() []*Routine {
-	m := []*Routine{}
+// Start ...
+func (manager *Manager) Start(unit *service.Unit, params ...interface{}) {
+	manager.Diagnostic.Start()
 
-	for _, routine := range manager.Routines {
-		if routine.IsRun {
-			m = append(m, routine)
+	routines := manager.prepare()
+	total := len(routines)
+
+	wg := &sync.WaitGroup{}
+	wg.Add(total)
+
+	for i := 0; i < total; i++ {
+		process := &Process{
+			wg: wg,
 		}
+
+		params = append(params, process)
+
+		go manager.run(routines[i], unit, process, params...)
 	}
 
-	return m
-}
+	wg.Wait()
+	unit.Release()
 
-// Start ...
-func (manager *Manager) Start(unit *service.Unit) {
-	go func() {
-		manager.Diagnostic.Start()
-
-		routines := manager.Prepare()
-		total := len(routines)
-
-		wg := &sync.WaitGroup{}
-		wg.Add(total)
-
-		for i := 0; i < total; i++ {
-			go manager.run(routines[i], &Process{
-				Unit: unit,
-				wg:   wg,
-			})
-		}
-
-		wg.Wait()
-		unit.Release()
-
-		manager.Diagnostic.Stop()
-	}()
-}
-
-func (manager *Manager) run(routine *Routine, process *Process) {
-	exec.Try(func() {
-		process.Diagnostic.Start()
-		routine.Func(routine, process)
-	}).Catch(func(message string) {
-		process.Done(false)
-	})
+	manager.Diagnostic.Stop()
 }
 
 // Stats ...
@@ -76,10 +57,30 @@ func (manager *Manager) Stats() time.Duration {
 	var elapsed time.Duration
 
 	for i := 0; i < len(manager.Routines); i++ {
-		// routine := manager.Routines[i]
-		// elapsed += routine.Diagnostic.Elapsed
-		// fmt.Printf("\n== routine = %s \n 1. start = %s \n 2. stop  = %s \n 3. elapsed = %s\n", routine.Name, routine.Diagnostic.StartTime, routine.Diagnostic.StopTime, routine.Diagnostic.Elapsed)
+		elapsed += manager.Diagnostic.Elapsed
 	}
 
 	return elapsed
+}
+
+func (manager *Manager) prepare() []*Routine {
+	m := []*Routine{}
+
+	for _, routine := range manager.Routines {
+		m = append(m, routine)
+	}
+
+	return m
+}
+
+func (manager *Manager) run(routine *Routine, unit *service.Unit, process *Process, params ...interface{}) {
+	exec.Try(func() {
+		routine.Func(unit, params...)
+
+		if !routine.IsAsync {
+			process.Finish()
+		}
+	}).Catch(func(message string) {
+		exception.Raise(message, exception.WARNING)
+	})
 }

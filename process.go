@@ -15,6 +15,17 @@ type Process struct {
 	Unit       *service.Unit
 }
 
+// Finish ...
+func (process *Process) Finish() {
+	if process.isDone {
+		return
+	}
+
+	process.isDone = true
+	process.wg.Done()
+	process.Diagnostic.Stop()
+}
+
 // Done ...
 func (process *Process) Done(isSuccess bool) {
 	if process.isDone {

@@ -1,15 +1,12 @@
 package process
 
 import (
-	"git.resultys.com.br/motor/orchestrator"
+	"git.resultys.com.br/motor/service"
 )
 
 // Routine struct
 type Routine struct {
-	Name         string
-	IsBlock      bool
-	IsRun        bool
-	Func         func(*Routine, *Process)
-	Orchestrator *orchestrator.Orchestrator
-	Param        interface{}
+	Name    string
+	IsAsync bool
+	Func    func(*service.Unit, ...interface{})
 }
