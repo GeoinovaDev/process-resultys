@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/GeoinovaDev/lower-resultys/exception"
-
 	"github.com/GeoinovaDev/lower-resultys/exec"
 	"github.com/GeoinovaDev/service-resultys"
 )
