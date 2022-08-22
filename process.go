@@ -3,7 +3,7 @@ package process
 import (
 	"sync"
 
-	"git.resultys.com.br/motor/service"
+	"github.com/GeoinovaDev/service-resultys"
 )
 
 // Process struct

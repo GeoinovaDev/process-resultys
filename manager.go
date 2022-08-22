@@ -4,10 +4,10 @@ import (
 	"sync"
 	"time"
 
-	"git.resultys.com.br/lib/lower/exception"
+	"github.com/GeoinovaDev/lower-resultys/exception"
 
-	"git.resultys.com.br/lib/lower/exec"
-	"git.resultys.com.br/motor/service"
+	"github.com/GeoinovaDev/lower-resultys/exec"
+	"github.com/GeoinovaDev/service-resultys"
 )
 
 // Manager struct
